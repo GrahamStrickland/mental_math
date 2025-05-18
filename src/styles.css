@@ -87,8 +87,21 @@ button {
   outline: none;
 }
 
-#greet-input {
+#date-input {
   margin-right: 5px;
+}
+
+#help {
+    white-space: pre-wrap;
+    text-align: left;
+}
+
+#date-btn, #help-btn {
+    max-width: 7.5em;
+    margin: 1em auto;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 @media (prefers-color-scheme: dark) {

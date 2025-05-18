@@ -13,14 +13,14 @@ fn generate_date() -> String {
     format!("{}", rand_date)
 }
 
-#[tauri::command]
+#[tauri::command(rename_all = "snake_case")]
 fn check_answer(answer: &str, rand_date: &str) -> String {
     let weekday = match answer.trim().parse::<Weekday>() {
         Ok(weekday) => weekday,
         Err(_) => return format!("Error, invalid weekday {}", answer),
     };
 
-    let rand_date= match rand_date.trim().parse::<NaiveDate>() {
+    let rand_date = match rand_date.trim().parse::<NaiveDate>() {
         Ok(weekday) => weekday,
         Err(_) => return format!("Error, invalid random date {}", rand_date),
     };
@@ -32,27 +32,9 @@ fn check_answer(answer: &str, rand_date: &str) -> String {
     format!("Try again!")
 }
 
-#[cfg_attr(mobile, tauri::mobile_entry_point)]
-pub fn run() {
-    tauri::Builder::default()
-        .plugin(tauri_plugin_opener::init())
-        .invoke_handler(tauri::generate_handler![generate_date, check_answer])
-        .run(tauri::generate_context!())
-        .expect("error while running tauri application");
-}
-
-pub fn random_date_in_range(
-    rng: &mut rand::rngs::ThreadRng,
-    start: NaiveDate,
-    end: NaiveDate,
-) -> NaiveDate {
-    let days_in_range = (end - start).num_days();
-    let random_days: i64 = rng.random_range(0..days_in_range);
-    start + Duration::days(random_days)
-}
-
-pub fn help() {
-    println!("\
+#[tauri::command]
+fn help() -> String {
+    format!("\
 ===========================
 Calculating Calendar Dates:
 ===========================
@@ -81,5 +63,24 @@ Month:
 
 Day:
     Just use the date itself. But to simplify calculation later, it is better to find the remainder when dividing by 7.
-");
+")
+}
+
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
+pub fn run() {
+    tauri::Builder::default()
+        .plugin(tauri_plugin_opener::init())
+        .invoke_handler(tauri::generate_handler![generate_date, check_answer, help])
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+}
+
+fn random_date_in_range(
+    rng: &mut rand::rngs::ThreadRng,
+    start: NaiveDate,
+    end: NaiveDate,
+) -> NaiveDate {
+    let days_in_range = (end - start).num_days();
+    let random_days: i64 = rng.random_range(0..days_in_range);
+    start + Duration::days(random_days)
 }
