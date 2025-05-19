@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "mental_math",
+  "productName": "Mental Math",
   "version": "0.1.0",
   "identifier": "com.mental_math.app",
   "build": {
@@ -10,7 +10,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "mental_math",
+        "title": "Mental Math",
         "width": 800,
         "height": 600
       }

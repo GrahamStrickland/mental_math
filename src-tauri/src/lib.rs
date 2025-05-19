@@ -72,7 +72,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![generate_date, check_answer, help])
         .run(tauri::generate_context!())
-        .expect("error while running tauri application");
+        .expect("Error encountered while running Mental Math");
 }
 
 fn random_date_in_range(
