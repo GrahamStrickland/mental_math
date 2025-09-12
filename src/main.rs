@@ -1,9 +1,13 @@
-use rand::Rng;
 use std::convert::{TryFrom, TryInto};
 use std::io;
 
 use chrono::{Datelike, NaiveDate, Weekday};
-use mental_math::{calendar_dates_help, cross_multiplication_help, random_date_in_range};
+use rand::Rng;
+use termcolor::Color;
+
+use mental_math::{
+    calendar_dates_help, cross_multiplication_help, print_color, print_error, random_date_in_range,
+};
 
 static MAX_BIG_NUMBER: i32 = 99999;
 static MAX_SMALL_NUMBER: i32 = 99;
@@ -49,7 +53,7 @@ Choose an exercise:
     match choice.try_into() {
         Ok(Choices::CalendarDates) => calculate_calendar_dates(&mut rng),
         Ok(Choices::Multiplication) => cross_multiplication(&mut rng),
-        Err(_) => eprintln!("Unknown option, please select either 1 or 2"),
+        Err(_) => print_error("Unknown option, please select either 1 or 2."),
     }
 }
 
@@ -84,10 +88,10 @@ fn calculate_calendar_dates(rng: &mut rand::rngs::ThreadRng) {
         println!("Your answer: {weekday}");
 
         if weekday == rand_date.weekday() {
-            println!("You are correct!");
+            print_color("You are correct!\n", Color::Green);
             break;
         }
-        println!("Try again!");
+        print_error("Try again!");
     }
 }
 
@@ -119,9 +123,9 @@ fn cross_multiplication(rng: &mut rand::rngs::ThreadRng) {
         println!("Your answer: {answer}");
 
         if answer == big_number * small_number {
-            println!("You are correct!");
+            print_color("You are correct!\n", Color::Green);
             break;
         }
-        println!("Try again!");
+        print_error("Try again!");
     }
 }
