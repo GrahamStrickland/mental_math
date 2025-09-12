@@ -1,1 +1,5 @@
+# Rust files
 /target
+
+# VSCode files
+*.code-workspace
