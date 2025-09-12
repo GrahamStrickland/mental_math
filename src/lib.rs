@@ -41,6 +41,8 @@ Month:
 
 Day:
     Just use the date itself. But to simplify calculation later, it is better to find the remainder when dividing by 7.
+
+Add together the 4 contributions, but if the date is in January or February in a leap year, you must subtract one.
 ");
 }
 
