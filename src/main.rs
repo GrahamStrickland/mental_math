@@ -1,13 +1,13 @@
 use std::convert::{TryFrom, TryInto};
 use std::io;
 
-use chrono::{Datelike, NaiveDate, Weekday};
+use chrono::{Datelike, NaiveDate, TimeDelta, Weekday};
 use rand::Rng;
 use termcolor::Color;
 
 use mental_math::{
     calendar_dates_help, cross_multiplication_help, print_color, print_error, print_statistics,
-    random_date_in_range,
+    random_date_in_range, timefunc,
 };
 
 static MAX_BIG_NUMBER: i32 = 99999;
@@ -41,8 +41,10 @@ MENTAL MATH
 
     let mut calendar_successes = 0;
     let mut calendar_failures = 0;
+    let mut calendar_duration = TimeDelta::zero();
     let mut multiplication_successes = 0;
     let mut multiplication_failures = 0;
+    let mut multiplication_duration = TimeDelta::zero();
 
     loop {
         println!(
@@ -64,14 +66,16 @@ Choose an exercise:
 
         match choice.try_into() {
             Ok(Choices::CalendarDates) => {
-                let failures = calculate_calendar_dates(&mut rng);
+                let (failures, duration) = timefunc(calculate_calendar_dates, &mut rng);
                 calendar_failures += failures;
                 calendar_successes += 1;
+                calendar_duration += duration;
             }
             Ok(Choices::Multiplication) => {
-                let failures = cross_multiplication(&mut rng);
+                let (failures, duration) = timefunc(cross_multiplication, &mut rng);
                 multiplication_failures += failures;
                 multiplication_successes += 1;
+                multiplication_duration += duration;
             }
             Err(_) => print_error("Unknown option, please select either 1 or 2."),
         }
@@ -79,8 +83,10 @@ Choose an exercise:
         print_statistics(
             calendar_successes,
             calendar_failures,
+            calendar_duration,
             multiplication_successes,
             multiplication_failures,
+            multiplication_duration,
         );
     }
 }

@@ -1,4 +1,4 @@
-use chrono::{Duration, NaiveDate};
+use chrono::{Duration, Local, NaiveDate, TimeDelta};
 use rand::Rng;
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
@@ -165,41 +165,51 @@ pub fn print_error(err_string: &str) {
 pub fn print_statistics(
     calendar_successes: u32,
     calendar_failures: u32,
+    calendar_duration: TimeDelta,
     multiplication_successes: u32,
     multiplication_failures: u32,
+    multiplication_duration: TimeDelta,
 ) {
     if calendar_successes > 0 {
+        let calendar_attempts = calendar_successes + calendar_failures;
         println!(
             "\
 ===========================
 Calculating Calendar Dates:
 ===========================
     Total played = {calendar_successes}
-    Attempts = {}
-    Success rate = {}%
+    Attempts = {calendar_attempts}
+    Success rate = {:.2}%
+    Average speed = {:.3}s
     ",
-            calendar_successes + calendar_failures,
-            ((f64::from(calendar_successes) / f64::from(calendar_successes + calendar_failures))
-                * 100.0)
-                .round()
+            (f64::from(calendar_successes) / f64::from(calendar_attempts)) * 100.0,
+            calendar_duration.as_seconds_f64() / f64::from(calendar_successes)
         );
     }
 
     if multiplication_successes > 0 {
+        let multiplication_attempts = multiplication_successes + multiplication_failures;
         println!(
             "\
 =====================
 Cross Multiplication:
 =====================
     Total played = {multiplication_successes}
-    Attempts = {}
-    Success rate = {}%
+    Attempts = {multiplication_attempts}
+    Success rate = {:.2}%
+    Average speed = {:.3}s
     ",
-            multiplication_successes + multiplication_failures,
-            ((f64::from(multiplication_successes)
-                / f64::from(multiplication_successes + multiplication_failures))
-                * 100.0)
-                .round()
+            (f64::from(multiplication_successes) / f64::from(multiplication_attempts)) * 100.0,
+            multiplication_duration.as_seconds_f64() / f64::from(multiplication_successes)
         );
     }
+}
+
+pub fn timefunc<F: Fn(S) -> T, S, T>(f: F, s: S) -> (T, TimeDelta) {
+    let start = Local::now();
+    let result = f(s);
+    let end = Local::now();
+    let duration = end - start;
+
+    (result, duration)
 }
