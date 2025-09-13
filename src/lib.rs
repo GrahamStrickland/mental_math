@@ -161,3 +161,45 @@ pub fn print_error(err_string: &str) {
         Err(e) => eprintln!("{}", e),
     }
 }
+
+pub fn print_statistics(
+    calendar_successes: u32,
+    calendar_failures: u32,
+    multiplication_successes: u32,
+    multiplication_failures: u32,
+) {
+    if calendar_successes > 0 {
+        println!(
+            "\
+===========================
+Calculating Calendar Dates:
+===========================
+    Total played = {calendar_successes}
+    Attempts = {}
+    Success rate = {}%
+    ",
+            calendar_successes + calendar_failures,
+            ((f64::from(calendar_successes) / f64::from(calendar_successes + calendar_failures))
+                * 100.0)
+                .round()
+        );
+    }
+
+    if multiplication_successes > 0 {
+        println!(
+            "\
+=====================
+Cross Multiplication:
+=====================
+    Total played = {multiplication_successes}
+    Attempts = {}
+    Success rate = {}%
+    ",
+            multiplication_successes + multiplication_failures,
+            ((f64::from(multiplication_successes)
+                / f64::from(multiplication_successes + multiplication_failures))
+                * 100.0)
+                .round()
+        );
+    }
+}

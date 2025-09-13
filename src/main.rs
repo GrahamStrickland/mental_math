@@ -6,11 +6,12 @@ use rand::Rng;
 use termcolor::Color;
 
 use mental_math::{
-    calendar_dates_help, cross_multiplication_help, print_color, print_error, random_date_in_range,
+    calendar_dates_help, cross_multiplication_help, print_color, print_error, print_statistics,
+    random_date_in_range,
 };
 
 static MAX_BIG_NUMBER: i32 = 99999;
-static MAX_SMALL_NUMBER: i32 = 99;
+static MAX_SMALL_NUMBER: i32 = 20;
 
 enum Choices {
     CalendarDates = 1,
@@ -35,29 +36,58 @@ fn main() {
 ===========
 MENTAL MATH
 ===========
-Choose an exercise:
-1 = Calculate Calendar Dates 
-2 = Cross Multiplication"
+"
     );
 
-    let mut choice = String::new();
+    let mut calendar_successes = 0;
+    let mut calendar_failures = 0;
+    let mut multiplication_successes = 0;
+    let mut multiplication_failures = 0;
 
-    io::stdin()
-        .read_line(&mut choice)
-        .expect("Failed to read line");
+    loop {
+        println!(
+            "\
+Choose an exercise:
+1 = Calculate Calendar Dates 
+2 = Cross Multiplication
+"
+        );
+        let mut choice = String::new();
 
-    let choice: u32 = choice.trim().parse().expect("Please type a number!");
+        io::stdin()
+            .read_line(&mut choice)
+            .expect("Failed to read line");
 
-    let mut rng = rand::rng();
+        let choice: u32 = choice.trim().parse().expect("Please type a number!");
 
-    match choice.try_into() {
-        Ok(Choices::CalendarDates) => calculate_calendar_dates(&mut rng),
-        Ok(Choices::Multiplication) => cross_multiplication(&mut rng),
-        Err(_) => print_error("Unknown option, please select either 1 or 2."),
+        let mut rng = rand::rng();
+
+        match choice.try_into() {
+            Ok(Choices::CalendarDates) => {
+                let failures = calculate_calendar_dates(&mut rng);
+                calendar_failures += failures;
+                calendar_successes += 1;
+            }
+            Ok(Choices::Multiplication) => {
+                let failures = cross_multiplication(&mut rng);
+                multiplication_failures += failures;
+                multiplication_successes += 1;
+            }
+            Err(_) => print_error("Unknown option, please select either 1 or 2."),
+        }
+
+        print_statistics(
+            calendar_successes,
+            calendar_failures,
+            multiplication_successes,
+            multiplication_failures,
+        );
     }
 }
 
-fn calculate_calendar_dates(rng: &mut rand::rngs::ThreadRng) {
+fn calculate_calendar_dates(rng: &mut rand::rngs::ThreadRng) -> u32 {
+    let mut failures = 0;
+
     println!("Enter the day of the week:");
 
     let rand_date = random_date_in_range(
@@ -67,7 +97,7 @@ fn calculate_calendar_dates(rng: &mut rand::rngs::ThreadRng) {
     );
 
     loop {
-        println!("Date: {}", rand_date);
+        print_color(format!("Date: {}\n", rand_date).as_str(), Color::Blue);
 
         let mut answer = String::new();
 
@@ -85,24 +115,30 @@ fn calculate_calendar_dates(rng: &mut rand::rngs::ThreadRng) {
             }
         };
 
-        println!("Your answer: {weekday}");
+        print_color(format!("Your answer: {weekday}\n").as_str(), Color::Yellow);
 
         if weekday == rand_date.weekday() {
             print_color("You are correct!\n", Color::Green);
-            break;
+            return failures;
         }
         print_error("Try again!");
+        failures += 1;
     }
 }
 
-fn cross_multiplication(rng: &mut rand::rngs::ThreadRng) {
+fn cross_multiplication(rng: &mut rand::rngs::ThreadRng) -> u32 {
+    let mut failures = 0;
+
     println!("Enter the answer:");
 
     let big_number = rng.random_range(0..MAX_BIG_NUMBER);
     let small_number = rng.random_range(0..MAX_SMALL_NUMBER);
 
     loop {
-        println!("{} x {}", big_number, small_number);
+        print_color(
+            format!("{} x {}\n", big_number, small_number).as_str(),
+            Color::Blue,
+        );
 
         let mut answer = String::new();
 
@@ -120,12 +156,13 @@ fn cross_multiplication(rng: &mut rand::rngs::ThreadRng) {
             }
         };
 
-        println!("Your answer: {answer}");
+        print_color(format!("Your answer: {answer}\n").as_str(), Color::Yellow);
 
         if answer == big_number * small_number {
             print_color("You are correct!\n", Color::Green);
-            break;
+            return failures;
         }
         print_error("Try again!");
+        failures += 1;
     }
 }
