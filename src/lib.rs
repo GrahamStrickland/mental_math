@@ -12,63 +12,15 @@ pub fn random_date_in_range(
     start + Duration::days(random_days)
 }
 
-pub fn calendar_dates_help() {
+pub fn basic_addition_help() {
     println!(
         "\
 ===========================
-Calculating Calendar Dates:
+Basic Addition:
 ===========================
+No help here!
 "
     );
-
-    print_color(
-        "\
-Century:
-    1600s / 2000s / 2400s /…  +2
-    1700s / 2100s / 2500s /…  +0
-    1800s / 2200s / 2600s /…  +5
-    1900s / 2300s / 2700s /…  +3
-
-",
-        Color::Red,
-    );
-
-    print_color("\
-Year:
-    Divide the year by 4 and ignore any remainder. Then add this to the original year. Find the remainder when dividing by 7.
-
-", Color::Yellow);
-
-    print_color(
-        "\
-Month:
-    January:   +4
-    February:  +0
-    March:     +0
-    April:     +3
-    May:       +5
-    June:      +1
-    July:      +3
-    August:    +6
-    September: +2
-    October:   +4
-    November:  +0
-    December:  +2
-
-",
-        Color::Green,
-    );
-
-    print_color("\
-Day:
-    Just use the date itself. But to simplify calculation later, it is better to find the remainder when dividing by 7.
-
-", Color::Blue);
-
-    print_color("\
-Add together the 4 contributions, but if the date is in January or February in a leap year, you must subtract one.
-
-", Color::White);
 }
 
 pub fn basic_multiplication_help(max_num: i32) {
@@ -150,6 +102,65 @@ When calculating a multiplication where one of the numbers is small, such as "
     print_color("1830\n\n", Color::White);
 }
 
+pub fn calendar_dates_help() {
+    println!(
+        "\
+===========================
+Calculating Calendar Dates:
+===========================
+"
+    );
+
+    print_color(
+        "\
+Century:
+    1600s / 2000s / 2400s /…  +2
+    1700s / 2100s / 2500s /…  +0
+    1800s / 2200s / 2600s /…  +5
+    1900s / 2300s / 2700s /…  +3
+
+",
+        Color::Red,
+    );
+
+    print_color("\
+Year:
+    Divide the year by 4 and ignore any remainder. Then add this to the original year. Find the remainder when dividing by 7.
+
+", Color::Yellow);
+
+    print_color(
+        "\
+Month:
+    January:   +4
+    February:  +0
+    March:     +0
+    April:     +3
+    May:       +5
+    June:      +1
+    July:      +3
+    August:    +6
+    September: +2
+    October:   +4
+    November:  +0
+    December:  +2
+
+",
+        Color::Green,
+    );
+
+    print_color("\
+Day:
+    Just use the date itself. But to simplify calculation later, it is better to find the remainder when dividing by 7.
+
+", Color::Blue);
+
+    print_color("\
+Add together the 4 contributions, but if the date is in January or February in a leap year, you must subtract one.
+
+", Color::White);
+}
+
 pub fn print_color(string: &str, color: Color) {
     let mut stdout = StandardStream::stdout(ColorChoice::Always);
 
@@ -179,30 +190,33 @@ pub fn print_error(err_string: &str) {
 }
 
 pub fn print_statistics(
-    calendar_successes: u32,
-    calendar_failures: u32,
-    calendar_duration: TimeDelta,
+    basic_addition_successes: u32,
+    basic_addition_failures: u32,
+    basic_addition_duration: TimeDelta,
     basic_multiplication_successes: u32,
     basic_multiplication_failures: u32,
     basic_multiplication_duration: TimeDelta,
     cross_multiplication_successes: u32,
     cross_multiplication_failures: u32,
     cross_multiplication_duration: TimeDelta,
+    calendar_successes: u32,
+    calendar_failures: u32,
+    calendar_duration: TimeDelta,
 ) {
-    if calendar_successes > 0 {
-        let calendar_attempts = calendar_successes + calendar_failures;
+    if basic_addition_successes > 0 {
+        let basic_addition_attempts = basic_addition_successes + basic_addition_failures;
         println!(
             "\
-===========================
-Calculating Calendar Dates:
-===========================
-    Total played = {calendar_successes}
-    Attempts = {calendar_attempts}
+===============
+Basic Addition:
+===============
+    Total played = {basic_addition_successes}
+    Attempts = {basic_addition_attempts}
     Success rate = {:.2}%
     Average speed = {:.3}s
     ",
-            (f64::from(calendar_successes) / f64::from(calendar_attempts)) * 100.0,
-            calendar_duration.as_seconds_f64() / f64::from(calendar_successes)
+            (f64::from(basic_addition_successes) / f64::from(basic_addition_attempts)) * 100.0,
+            basic_addition_duration.as_seconds_f64() / f64::from(basic_addition_successes)
         );
     }
 
@@ -243,6 +257,23 @@ Cross Multiplication:
                 * 100.0,
             cross_multiplication_duration.as_seconds_f64()
                 / f64::from(cross_multiplication_successes)
+        );
+    }
+
+    if calendar_successes > 0 {
+        let calendar_attempts = calendar_successes + calendar_failures;
+        println!(
+            "\
+===========================
+Calculating Calendar Dates:
+===========================
+    Total played = {calendar_successes}
+    Attempts = {calendar_attempts}
+    Success rate = {:.2}%
+    Average speed = {:.3}s
+    ",
+            (f64::from(calendar_successes) / f64::from(calendar_attempts)) * 100.0,
+            calendar_duration.as_seconds_f64() / f64::from(calendar_successes)
         );
     }
 }
