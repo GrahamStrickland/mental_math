@@ -6,8 +6,8 @@ use rand::Rng;
 use termcolor::Color;
 
 use mental_math::{
-    calendar_dates_help, cross_multiplication_help, print_color, print_error, print_statistics,
-    random_date_in_range, timefunc,
+    basic_multiplication_help, calendar_dates_help, cross_multiplication_help, print_color,
+    print_error, print_statistics, random_date_in_range, timefunc,
 };
 
 static MAX_BIG_NUMBER: i32 = 99999;
@@ -15,7 +15,8 @@ static MAX_SMALL_NUMBER: i32 = 20;
 
 enum Choices {
     CalendarDates = 1,
-    Multiplication,
+    BasicMultiplication,
+    CrossMultiplication,
 }
 
 impl TryFrom<u32> for Choices {
@@ -24,7 +25,8 @@ impl TryFrom<u32> for Choices {
     fn try_from(i: u32) -> Result<Self, Self::Error> {
         match i {
             x if x == Choices::CalendarDates as u32 => Ok(Choices::CalendarDates),
-            x if x == Choices::Multiplication as u32 => Ok(Choices::Multiplication),
+            x if x == Choices::BasicMultiplication as u32 => Ok(Choices::BasicMultiplication),
+            x if x == Choices::CrossMultiplication as u32 => Ok(Choices::CrossMultiplication),
             _ => Err(()),
         }
     }
@@ -42,16 +44,20 @@ MENTAL MATH
     let mut calendar_successes = 0;
     let mut calendar_failures = 0;
     let mut calendar_duration = TimeDelta::zero();
-    let mut multiplication_successes = 0;
-    let mut multiplication_failures = 0;
-    let mut multiplication_duration = TimeDelta::zero();
+    let mut basic_multiplication_successes = 0;
+    let mut basic_multiplication_failures = 0;
+    let mut basic_multiplication_duration = TimeDelta::zero();
+    let mut cross_multiplication_successes = 0;
+    let mut cross_multiplication_failures = 0;
+    let mut cross_multiplication_duration = TimeDelta::zero();
 
     loop {
         println!(
             "\
 Choose an exercise:
 1 = Calculate Calendar Dates 
-2 = Cross Multiplication
+2 = Basic Multiplication
+3 = Cross Multiplication
 "
         );
         let mut choice = String::new();
@@ -71,11 +77,17 @@ Choose an exercise:
                 calendar_successes += 1;
                 calendar_duration += duration;
             }
-            Ok(Choices::Multiplication) => {
+            Ok(Choices::BasicMultiplication) => {
+                let (failures, duration) = timefunc(basic_multiplication, &mut rng);
+                basic_multiplication_failures += failures;
+                basic_multiplication_successes += 1;
+                basic_multiplication_duration += duration;
+            }
+            Ok(Choices::CrossMultiplication) => {
                 let (failures, duration) = timefunc(cross_multiplication, &mut rng);
-                multiplication_failures += failures;
-                multiplication_successes += 1;
-                multiplication_duration += duration;
+                cross_multiplication_failures += failures;
+                cross_multiplication_successes += 1;
+                cross_multiplication_duration += duration;
             }
             Err(_) => print_error("Unknown option, please select either 1 or 2."),
         }
@@ -84,9 +96,12 @@ Choose an exercise:
             calendar_successes,
             calendar_failures,
             calendar_duration,
-            multiplication_successes,
-            multiplication_failures,
-            multiplication_duration,
+            basic_multiplication_successes,
+            basic_multiplication_failures,
+            basic_multiplication_duration,
+            cross_multiplication_successes,
+            cross_multiplication_failures,
+            cross_multiplication_duration,
         );
     }
 }
@@ -132,13 +147,51 @@ fn calculate_calendar_dates(rng: &mut rand::rngs::ThreadRng) -> u32 {
     }
 }
 
+fn basic_multiplication(rng: &mut rand::rngs::ThreadRng) -> u32 {
+    let mut failures = 0;
+
+    println!("Enter the answer:");
+
+    let first = rng.random_range(2..MAX_SMALL_NUMBER);
+    let second = rng.random_range(2..MAX_SMALL_NUMBER);
+
+    loop {
+        print_color(format!("{} x {}\n", first, second).as_str(), Color::Blue);
+
+        let mut answer = String::new();
+
+        io::stdin()
+            .read_line(&mut answer)
+            .expect("Failed to read line");
+
+        let answer: i32 = match answer.trim().parse() {
+            Ok(i) => i,
+            Err(_) => {
+                if answer.trim() == "help" || answer.trim() == "--help" || answer.trim() == "-h" {
+                    basic_multiplication_help(MAX_SMALL_NUMBER);
+                }
+                continue;
+            }
+        };
+
+        print_color(format!("Your answer: {answer}\n").as_str(), Color::Yellow);
+
+        if answer == first * second {
+            print_color("You are correct!\n", Color::Green);
+            return failures;
+        }
+        print_error("Try again!");
+        failures += 1;
+    }
+}
+
 fn cross_multiplication(rng: &mut rand::rngs::ThreadRng) -> u32 {
     let mut failures = 0;
 
     println!("Enter the answer:");
 
-    let big_number = rng.random_range(0..MAX_BIG_NUMBER);
-    let small_number = rng.random_range(0..MAX_SMALL_NUMBER);
+    let big_number = rng.random_range(MAX_SMALL_NUMBER..MAX_BIG_NUMBER);
+    let small_number = rng.random_range(2..MAX_SMALL_NUMBER);
 
     loop {
         print_color(

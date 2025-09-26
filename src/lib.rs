@@ -71,6 +71,22 @@ Add together the 4 contributions, but if the date is in January or February in a
 ", Color::White);
 }
 
+pub fn basic_multiplication_help(max_num: i32) {
+    print!(
+        "\
+=====================
+Basic Multiplication:
+=====================
+"
+    );
+    for i in 1..=max_num {
+        for j in 1..=max_num {
+            print!("{:>4} ", i * j);
+        }
+        println!("\n");
+    }
+}
+
 pub fn cross_multiplication_help() {
     print!(
         "\
@@ -166,9 +182,12 @@ pub fn print_statistics(
     calendar_successes: u32,
     calendar_failures: u32,
     calendar_duration: TimeDelta,
-    multiplication_successes: u32,
-    multiplication_failures: u32,
-    multiplication_duration: TimeDelta,
+    basic_multiplication_successes: u32,
+    basic_multiplication_failures: u32,
+    basic_multiplication_duration: TimeDelta,
+    cross_multiplication_successes: u32,
+    cross_multiplication_failures: u32,
+    cross_multiplication_duration: TimeDelta,
 ) {
     if calendar_successes > 0 {
         let calendar_attempts = calendar_successes + calendar_failures;
@@ -187,20 +206,43 @@ Calculating Calendar Dates:
         );
     }
 
-    if multiplication_successes > 0 {
-        let multiplication_attempts = multiplication_successes + multiplication_failures;
+    if basic_multiplication_successes > 0 {
+        let basic_multiplication_attempts =
+            basic_multiplication_successes + basic_multiplication_failures;
+        println!(
+            "\
+=====================
+Basic Multiplication:
+=====================
+    Total played = {basic_multiplication_successes}
+    Attempts = {basic_multiplication_attempts}
+    Success rate = {:.2}%
+    Average speed = {:.3}s
+    ",
+            (f64::from(basic_multiplication_successes) / f64::from(basic_multiplication_attempts))
+                * 100.0,
+            basic_multiplication_duration.as_seconds_f64()
+                / f64::from(basic_multiplication_successes)
+        );
+    }
+
+    if cross_multiplication_successes > 0 {
+        let cross_multiplication_attempts =
+            cross_multiplication_successes + cross_multiplication_failures;
         println!(
             "\
 =====================
 Cross Multiplication:
 =====================
-    Total played = {multiplication_successes}
-    Attempts = {multiplication_attempts}
+    Total played = {cross_multiplication_successes}
+    Attempts = {cross_multiplication_attempts}
     Success rate = {:.2}%
     Average speed = {:.3}s
     ",
-            (f64::from(multiplication_successes) / f64::from(multiplication_attempts)) * 100.0,
-            multiplication_duration.as_seconds_f64() / f64::from(multiplication_successes)
+            (f64::from(cross_multiplication_successes) / f64::from(cross_multiplication_attempts))
+                * 100.0,
+            cross_multiplication_duration.as_seconds_f64()
+                / f64::from(cross_multiplication_successes)
         );
     }
 }
