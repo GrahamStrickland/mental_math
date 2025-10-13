@@ -3,3 +3,4 @@
 
 # VSCode files
 *.code-workspace
+.vscode/
