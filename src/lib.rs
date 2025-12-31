@@ -12,12 +12,23 @@ pub fn random_date_in_range(
     start + Duration::days(random_days)
 }
 
+pub fn fast_arithmetic_help() {
+    println!(
+        "\
+================
+Fast Arithmetic:
+================
+No help here!
+"
+    );
+}
+
 pub fn basic_addition_help() {
     println!(
         "\
-===========================
+===============
 Basic Addition:
-===========================
+===============
 No help here!
 "
     );
@@ -190,6 +201,9 @@ pub fn print_error(err_string: &str) {
 }
 
 pub fn print_statistics(
+    fast_arithmetic_failures: u32,
+    fast_arithmetic_successes: u32,
+    fast_arithmetic_duration: TimeDelta,
     basic_addition_successes: u32,
     basic_addition_failures: u32,
     basic_addition_duration: TimeDelta,
@@ -203,6 +217,23 @@ pub fn print_statistics(
     calendar_failures: u32,
     calendar_duration: TimeDelta,
 ) {
+    if fast_arithmetic_successes > 0 {
+        let fast_arithmetic_attempts = fast_arithmetic_successes + fast_arithmetic_failures;
+        println!(
+            "\
+================
+Fast Arithmetic:
+================
+    Total played = {fast_arithmetic_successes}
+    Attempts = {fast_arithmetic_attempts}
+    Success rate = {:.2}%
+    Average speed = {:.3}s
+    ",
+            (f64::from(fast_arithmetic_successes) / f64::from(fast_arithmetic_attempts)) * 100.0,
+            fast_arithmetic_duration.as_seconds_f64() / f64::from(fast_arithmetic_successes)
+        );
+    }
+
     if basic_addition_successes > 0 {
         let basic_addition_attempts = basic_addition_successes + basic_addition_failures;
         println!(
