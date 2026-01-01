@@ -1,13 +1,12 @@
 use std::convert::{TryFrom, TryInto};
-use std::io;
 
 use chrono::{Datelike, NaiveDate, TimeDelta, Weekday};
+use colored::Colorize;
 use rand::Rng;
-use termcolor::Color;
 
 use mental_math::{
     Choices, ExerciseStats, MAX_ADDITIONS, MAX_BIG_NUMBER, MAX_MED_NUMBER, MAX_SMALL_NUMBER, help,
-    print_color, print_error, random_date_in_range, timefunc,
+    print_header, random_date_in_range, read_input, timefunc,
 };
 
 enum Operations {
@@ -32,13 +31,7 @@ impl TryFrom<usize> for Operations {
 }
 
 fn main() {
-    println!(
-        "\
-===========
-MENTAL MATH
-===========
-"
-    );
+    print_header("MENTAL MATH");
 
     let mut stats = vec![
         ExerciseStats::new("Fast Arithmetic"),
@@ -53,19 +46,26 @@ MENTAL MATH
     let mut duration = TimeDelta::zero();
 
     loop {
-        println!("Choose an exercise:");
+        println!("\n{}", "Choose an exercise:".bold());
 
         for i in 0..(&stats).len() {
             println!("{} = {}", i + 1, stats[i].name);
         }
 
-        let mut choice = String::new();
+        let choice = read_input("Enter selection");
+        let choice_trimmed = choice.trim();
 
-        io::stdin()
-            .read_line(&mut choice)
-            .expect("Failed to read line");
+        if choice_trimmed.is_empty() {
+            continue;
+        }
 
-        let choice: usize = choice.trim().parse().expect("Please type a number!");
+        let choice: usize = match choice_trimmed.parse() {
+            Ok(num) => num,
+            Err(_) => {
+                eprintln!("{}", "Please type a number!".red());
+                continue;
+            }
+        };
 
         match choice.try_into() {
             Ok(Choices::FastArithmetic) => {
@@ -83,15 +83,21 @@ MENTAL MATH
             Ok(Choices::CalendarDates) => {
                 (failures, duration) = timefunc(calculate_calendar_dates, &mut rng);
             }
-            Err(_) => print_error("Unknown option, please select a number between 1 and 4."),
+            Err(_) => eprintln!(
+                "{}",
+                "Unknown option, please select a number between 1 and 5.".red()
+            ),
         }
-        stats[choice - 1].failures += failures;
-        stats[choice - 1].successes += 1;
-        stats[choice - 1].duration += duration;
 
-        for ex in &stats {
-            if ex.successes > 0 {
-                ex.print();
+        if choice > 0 && choice <= stats.len() {
+            stats[choice - 1].failures += failures;
+            stats[choice - 1].successes += 1;
+            stats[choice - 1].duration += duration;
+
+            for ex in &stats {
+                if ex.successes > 0 {
+                    ex.print();
+                }
             }
         }
     }
@@ -137,22 +143,20 @@ fn fast_arithmetic(rng: &mut rand::rngs::ThreadRng) -> u32 {
             arithmetic_string = format!("{} ÷ {}", first_number, second_number);
         }
         Err(_) => {
-            print_error("Unknown operation encountered, unable to proceed.");
+            eprintln!(
+                "{}",
+                "Unknown operation encountered, unable to proceed.".red()
+            );
             return failures;
         }
     }
+
     arithmetic_string.push('\n');
 
-    println!("Enter the answer:");
-
     loop {
-        print_color(arithmetic_string.as_str(), Color::Blue);
+        print!("{}", arithmetic_string.blue().bold());
 
-        let mut answer = String::new();
-
-        io::stdin()
-            .read_line(&mut answer)
-            .expect("Failed to read line");
+        let answer = read_input("Enter the answer");
 
         let answer: i32 = match answer.trim().parse() {
             Ok(i) => i,
@@ -164,13 +168,13 @@ fn fast_arithmetic(rng: &mut rand::rngs::ThreadRng) -> u32 {
             }
         };
 
-        print_color(format!("Your answer: {answer}\n").as_str(), Color::Yellow);
+        print!("{}", format!("Your answer: {}\n", answer).yellow());
 
         if answer == expected {
-            print_color("You are correct!\n", Color::Green);
+            println!("{}", "You are correct!\n".green().bold());
             return failures;
         }
-        print_error("Try again!");
+        eprintln!("{}", "Try again!".red());
         failures += 1;
     }
 }
@@ -190,16 +194,10 @@ fn basic_addition(rng: &mut rand::rngs::ThreadRng) -> u32 {
     }
     addition_string.push('\n');
 
-    println!("Enter the answer:");
-
     loop {
-        print_color(addition_string.as_str(), Color::Blue);
+        print!("{}", addition_string.blue().bold());
 
-        let mut answer = String::new();
-
-        io::stdin()
-            .read_line(&mut answer)
-            .expect("Failed to read line");
+        let answer = read_input("Enter the answer");
 
         let answer: i32 = match answer.trim().parse() {
             Ok(i) => i,
@@ -211,13 +209,13 @@ fn basic_addition(rng: &mut rand::rngs::ThreadRng) -> u32 {
             }
         };
 
-        print_color(format!("Your answer: {answer}\n").as_str(), Color::Yellow);
+        print!("{}", format!("Your answer: {}\n", answer).yellow());
 
         if answer == terms.iter().sum() {
-            print_color("You are correct!\n", Color::Green);
+            println!("{}", "You are correct!\n".green().bold());
             return failures;
         }
-        print_error("Try again!");
+        eprintln!("{}", "Try again!".red());
         failures += 1;
     }
 }
@@ -225,19 +223,13 @@ fn basic_addition(rng: &mut rand::rngs::ThreadRng) -> u32 {
 fn basic_multiplication(rng: &mut rand::rngs::ThreadRng) -> u32 {
     let mut failures = 0;
 
-    println!("Enter the answer:");
-
     let first = rng.random_range(2..MAX_SMALL_NUMBER);
     let second = rng.random_range(MAX_SMALL_NUMBER..=MAX_SMALL_NUMBER);
 
     loop {
-        print_color(format!("{} x {}\n", first, second).as_str(), Color::Blue);
+        print!("{}", format!("{} x {}\n", first, second).blue().bold());
 
-        let mut answer = String::new();
-
-        io::stdin()
-            .read_line(&mut answer)
-            .expect("Failed to read line");
+        let answer = read_input("Enter the answer");
 
         let answer: i32 = match answer.trim().parse() {
             Ok(i) => i,
@@ -249,13 +241,13 @@ fn basic_multiplication(rng: &mut rand::rngs::ThreadRng) -> u32 {
             }
         };
 
-        print_color(format!("Your answer: {answer}\n").as_str(), Color::Yellow);
+        print!("{}", format!("Your answer: {}\n", answer).yellow());
 
         if answer == first * second {
-            print_color("You are correct!\n", Color::Green);
+            println!("{}", "You are correct!\n".green().bold());
             return failures;
         }
-        print_error("Try again!");
+        eprintln!("{}", "Try again!".red());
         failures += 1;
     }
 }
@@ -263,22 +255,16 @@ fn basic_multiplication(rng: &mut rand::rngs::ThreadRng) -> u32 {
 fn cross_multiplication(rng: &mut rand::rngs::ThreadRng) -> u32 {
     let mut failures = 0;
 
-    println!("Enter the answer:");
-
     let big_number = rng.random_range(MAX_SMALL_NUMBER..MAX_BIG_NUMBER);
     let small_number = rng.random_range(2..MAX_SMALL_NUMBER);
 
     loop {
-        print_color(
-            format!("{} x {}\n", big_number, small_number).as_str(),
-            Color::Blue,
+        print!(
+            "{}",
+            format!("{} x {}\n", big_number, small_number).blue().bold()
         );
 
-        let mut answer = String::new();
-
-        io::stdin()
-            .read_line(&mut answer)
-            .expect("Failed to read line");
+        let answer = read_input("Enter the answer");
 
         let answer: i32 = match answer.trim().parse() {
             Ok(i) => i,
@@ -290,21 +276,19 @@ fn cross_multiplication(rng: &mut rand::rngs::ThreadRng) -> u32 {
             }
         };
 
-        print_color(format!("Your answer: {answer}\n").as_str(), Color::Yellow);
+        print!("{}", format!("Your answer: {}\n", answer).yellow());
 
         if answer == big_number * small_number {
-            print_color("You are correct!\n", Color::Green);
+            println!("{}", "You are correct!\n".green().bold());
             return failures;
         }
-        print_error("Try again!");
+        eprintln!("{}", "Try again!".red());
         failures += 1;
     }
 }
 
 fn calculate_calendar_dates(rng: &mut rand::rngs::ThreadRng) -> u32 {
     let mut failures = 0;
-
-    println!("Enter the day of the week:");
 
     let rand_date = random_date_in_range(
         rng,
@@ -313,13 +297,9 @@ fn calculate_calendar_dates(rng: &mut rand::rngs::ThreadRng) -> u32 {
     );
 
     loop {
-        print_color(format!("Date: {}\n", rand_date).as_str(), Color::Blue);
+        print!("{}", format!("Date: {}\n", rand_date).blue().bold());
 
-        let mut answer = String::new();
-
-        io::stdin()
-            .read_line(&mut answer)
-            .expect("Failed to read line");
+        let answer = read_input("Enter the day of the week");
 
         let weekday = match answer.trim().parse::<Weekday>() {
             Ok(weekday) => weekday,
@@ -331,13 +311,14 @@ fn calculate_calendar_dates(rng: &mut rand::rngs::ThreadRng) -> u32 {
             }
         };
 
-        print_color(format!("Your answer: {weekday}\n").as_str(), Color::Yellow);
+        print!("{}", format!("Your answer: {}\n", weekday).yellow());
 
         if weekday == rand_date.weekday() {
-            print_color("You are correct!\n", Color::Green);
+            println!("{}", "You are correct!\n".green().bold());
             return failures;
         }
-        print_error("Try again!");
+        eprintln!("{}", "Try again!".red());
         failures += 1;
     }
 }
+

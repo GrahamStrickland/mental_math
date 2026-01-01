@@ -1,6 +1,6 @@
 use chrono::{Duration, Local, NaiveDate, TimeDelta};
+use colored::Colorize;
 use rand::Rng;
-use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
 pub static MAX_ADDITIONS: i32 = 5;
 pub static MAX_BIG_NUMBER: i32 = 99999;
@@ -32,30 +32,16 @@ impl TryFrom<usize> for Choices {
 
 pub fn help(choice: Choices) {
     match choice {
-        Choices::FastArithmetic => println!(
-            "\
-================
-Fast Arithmetic:
-================
-No help here!
-"
-        ),
-        Choices::BasicAddition => println!(
-            "\
-===============
-Basic Addition:
-===============
-No help here!
-"
-        ),
+        Choices::FastArithmetic => {
+            print_header("Fast Arithmetic");
+            println!("No help here!\n");
+        }
+        Choices::BasicAddition => {
+            print_header("Basic Addition");
+            println!("No help here!\n");
+        }
         Choices::BasicMultiplication => {
-            print!(
-                "\
-=====================
-Basic Multiplication:
-=====================
-"
-            );
+            print_header("Basic Multiplication");
             for i in 1..=MAX_SMALL_NUMBER {
                 for j in 1..=MAX_SMALL_NUMBER {
                     print!("{:>4} ", i * j);
@@ -64,124 +50,80 @@ Basic Multiplication:
             }
         }
         Choices::CrossMultiplication => {
+            print_header("Cross Multiplication");
             print!(
-                "\
-=====================
-Cross Multiplication:
-=====================
-Basic Method for Small Numbers:
-When calculating a multiplication where one of the numbers is small, such as "
+                "Basic Method for Small Numbers:\n\
+                 When calculating a multiplication where one of the numbers is small, such as "
             );
-            print_color("68435", Color::Green);
+            print!("{}", "68435".green());
 
-            print_color(
-                " × 18,\nit may be fastest to simply add together multiples of the smaller number:\n\n",
-                Color::White,
+            print!(
+                "{}",
+                " × 18,\nit may be fastest to simply add together multiples of the smaller number:\n\n".white()
             );
 
-            print_color("         5", Color::Green);
-            print_color(" × 18 =  ", Color::White);
-            print_color("9", Color::Red);
-            print_color("0", Color::Blue);
-            print_color(" ⇒ ......", Color::White);
-            print_color("0\n", Color::Blue);
+            print!("{}", "         5".green());
+            print!("{}", " × 18 =  ".white());
+            print!("{}", "9".red());
+            print!("{}", "0".blue());
+            print!("{}", " ⇒ ......".white());
+            println!("{}", "0".blue());
 
-            print_color("     9", Color::Red);
-            print_color(" + ", Color::White);
-            print_color("3", Color::Green);
-            print_color(" × 18 =  ", Color::White);
-            print_color("6", Color::Red);
-            print_color("3", Color::Blue);
-            print_color(" ⇒ .....", Color::White);
-            print_color("3", Color::Blue);
-            print_color("0\n", Color::White);
+            print!("{}", "     9".red());
+            print!("{}", " + ".white());
+            print!("{}", "3".green());
+            print!("{}", " × 18 =  ".white());
+            print!("{}", "6".red());
+            print!("{}", "3".blue());
+            print!("{}", " ⇒ .....".white());
+            print!("{}", "3".blue());
+            println!("{}", "0".white());
 
-            print_color("     6", Color::Red);
-            print_color(" + ", Color::White);
-            print_color("4", Color::Green);
-            print_color(" × 18 =  ", Color::White);
-            print_color("7", Color::Red);
-            print_color("8", Color::Blue);
-            print_color(" ⇒ ....", Color::White);
-            print_color("8", Color::Blue);
-            print_color("30\n", Color::White);
+            print!("{}", "     6".red());
+            print!("{}", " + ".white());
+            print!("{}", "4".green());
+            print!("{}", " × 18 =  ".white());
+            print!("{}", "7".red());
+            print!("{}", "8".blue());
+            print!("{}", " ⇒ ....".white());
+            print!("{}", "8".blue());
+            println!("{}", "30".white());
 
-            print_color("     7", Color::Red);
-            print_color(" + ", Color::White);
-            print_color("8", Color::Green);
-            print_color(" × 18 = ", Color::White);
-            print_color("15", Color::Red);
-            print_color("1", Color::Blue);
-            print_color(" ⇒ ...", Color::White);
-            print_color("1", Color::Blue);
-            print_color("830\n", Color::White);
+            print!("{}", "     7".red());
+            print!("{}", " + ".white());
+            print!("{}", "8".green());
+            print!("{}", " × 18 = ".white());
+            print!("{}", "15".red());
+            print!("{}", "1".blue());
+            print!("{}", " ⇒ ...".white());
+            print!("{}", "1".blue());
+            println!("{}", "830".white());
 
-            print_color("    15", Color::Red);
-            print_color(" + ", Color::White);
-            print_color("6", Color::Green);
-            print_color(" × 18 = ", Color::White);
-            print_color("123", Color::Blue);
-            print_color(" ⇒ ", Color::White);
-            print_color("123", Color::Blue);
-            print_color("1830\n\n", Color::White);
+            print!("{}", "    15".red());
+            print!("{}", " + ".white());
+            print!("{}", "6".green());
+            print!("{}", " × 18 = ".white());
+            print!("{}", "123".blue());
+            print!("{}", " ⇒ ".white());
+            print!("{}", "123".blue());
+            println!("{}", "1830\n".white());
         }
         Choices::CalendarDates => {
-            println!(
-                "\
-===========================
-Calculating Calendar Dates:
-===========================
-"
+            print_header("Calculating Calendar Dates");
+
+            println!("{}",
+                "Century:\n    1600s / 2000s / 2400s /…  +2\n    1700s / 2100s / 2500s /…  +0\n    1800s / 2200s / 2600s /…  +5\n    1900s / 2300s / 2700s /…  +3\n\n".red()
             );
 
-            print_color(
-                "\
-Century:
-    1600s / 2000s / 2400s /…  +2
-    1700s / 2100s / 2500s /…  +0
-    1800s / 2200s / 2600s /…  +5
-    1900s / 2300s / 2700s /…  +3
+            println!("{}", "Year:\n    Divide the year by 4 and ignore any remainder. Then add this to the original year. Find the remainder when dividing by 7.\n\n".yellow());
 
-",
-                Color::Red,
+            println!("{}", 
+                "Month:\n    January:   +4\n    February:  +0\n    March:     +0\n    April:     +3\n    May:       +5\n    June:      +1\n    July:      +3\n    August:    +6\n    September: +2\n    October:   +4\n    November:  +0\n    December:  +2\n\n".green()
             );
 
-            print_color("\
-Year:
-    Divide the year by 4 and ignore any remainder. Then add this to the original year. Find the remainder when dividing by 7.
+            println!("{}", "Day:\n    Just use the date itself. But to simplify calculation later, it is better to find the remainder when dividing by 7.\n\n".blue());
 
-", Color::Yellow);
-
-            print_color(
-                "\
-Month:
-    January:   +4
-    February:  +0
-    March:     +0
-    April:     +3
-    May:       +5
-    June:      +1
-    July:      +3
-    August:    +6
-    September: +2
-    October:   +4
-    November:  +0
-    December:  +2
-
-",
-                Color::Green,
-            );
-
-            print_color("\
-Day:
-    Just use the date itself. But to simplify calculation later, it is better to find the remainder when dividing by 7.
-
-", Color::Blue);
-
-            print_color("\
-Add together the 4 contributions, but if the date is in January or February in a leap year, you must subtract one.
-
-", Color::White);
+            println!("{}", "Add together the 4 contributions, but if the date is in January or February in a leap year, you must subtract one.\n".white());
         }
     }
 }
@@ -205,16 +147,9 @@ impl ExerciseStats {
 
     pub fn print(self: &ExerciseStats) {
         let attempts = self.successes + self.failures;
-        println!("{}", "=".repeat(self.name.len() + 1));
-        println!("{}", self.name);
-        println!("{}", "=".repeat(self.name.len() + 1));
+        print_header(self.name);
         println!(
-            "\
-Total played = {}
-Attempts = {}
-Success rate = {:.2}%
-Average speed = {:.3}s
-        ",
+            "Total played:  {}\nAttempts:      {}\nSuccess rate:  {:.2}%\nAverage speed: {:.3}s\n",
             self.successes,
             attempts,
             (f64::from(self.successes) / f64::from(attempts)) * 100.0,
@@ -242,30 +177,39 @@ pub fn random_date_in_range(
     start + Duration::days(random_days)
 }
 
-pub fn print_color(string: &str, color: Color) {
-    let mut stdout = StandardStream::stdout(ColorChoice::Always);
-
-    match stdout.set_color(ColorSpec::new().set_fg(Some(color))) {
-        Ok(_) => print!("{}", string),
-        Err(e) => eprintln!("{}", e),
-    }
-
-    match stdout.set_color(ColorSpec::new().set_fg(Some(Color::White))) {
-        Ok(_) => {}
-        Err(e) => eprintln!("{}", e),
-    }
+pub fn print_header(title: &str) {
+    let len = title.len();
+    let line = "─".repeat(len + 2);
+    println!("{}", format!(" ╭{}╮", line).cyan().bold());
+    println!(
+        " {} {} {}",
+        "│".cyan().bold(),
+        title.bold(),
+        "│".cyan().bold()
+    );
+    println!("{}", format!(" ╰{}╯", line).cyan().bold());
 }
 
-pub fn print_error(err_string: &str) {
-    let mut stderr = StandardStream::stderr(ColorChoice::Always);
+pub fn read_input(prompt: &str) -> String {
+    use std::io::{self, Write};
 
-    match stderr.set_color(ColorSpec::new().set_fg(Some(Color::Red))) {
-        Ok(_) => eprintln!("{}", err_string),
-        Err(e) => eprintln!("{}", e),
-    }
+    println!(
+        "{}",
+        "╭──────────────────────────────────────────────╮".cyan()
+    );
+    println!("{} {:<44} {}", "│".cyan(), prompt.bold(), "│".cyan());
+    print!("{} > ", "│".cyan());
+    io::stdout().flush().unwrap();
 
-    match stderr.set_color(ColorSpec::new().set_fg(Some(Color::White))) {
-        Ok(_) => {}
-        Err(e) => eprintln!("{}", e),
-    }
+    let mut input = String::new();
+    io::stdin()
+        .read_line(&mut input)
+        .expect("Failed to read line");
+
+    println!(
+        "{}",
+        "╰──────────────────────────────────────────────╯".cyan()
+    );
+
+    input
 }
