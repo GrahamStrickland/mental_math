@@ -6,9 +6,9 @@ use rand::Rng;
 use termcolor::Color;
 
 use mental_math::{
-    basic_addition_help, basic_multiplication_help, calendar_dates_help, cross_multiplication_help,
-    fast_arithmetic_help, print_color, print_error, print_statistics, random_date_in_range,
-    timefunc,
+    ExerciseStats, basic_addition_help, basic_multiplication_help, calendar_dates_help,
+    cross_multiplication_help, fast_arithmetic_help, print_color, print_error,
+    random_date_in_range, timefunc,
 };
 
 static MAX_ADDITIONS: i32 = 5;
@@ -23,15 +23,15 @@ enum Operations {
     Division,
 }
 
-impl TryFrom<u32> for Operations {
+impl TryFrom<usize> for Operations {
     type Error = ();
 
-    fn try_from(i: u32) -> Result<Self, Self::Error> {
+    fn try_from(i: usize) -> Result<Self, Self::Error> {
         match i {
-            x if x == Operations::Addition as u32 => Ok(Operations::Addition),
-            x if x == Operations::Subtraction as u32 => Ok(Operations::Subtraction),
-            x if x == Operations::Multiplication as u32 => Ok(Operations::Multiplication),
-            x if x == Operations::Division as u32 => Ok(Operations::Division),
+            x if x == Operations::Addition as usize => Ok(Operations::Addition),
+            x if x == Operations::Subtraction as usize => Ok(Operations::Subtraction),
+            x if x == Operations::Multiplication as usize => Ok(Operations::Multiplication),
+            x if x == Operations::Division as usize => Ok(Operations::Division),
             _ => Err(()),
         }
     }
@@ -45,16 +45,16 @@ enum Choices {
     CalendarDates,
 }
 
-impl TryFrom<u32> for Choices {
+impl TryFrom<usize> for Choices {
     type Error = ();
 
-    fn try_from(i: u32) -> Result<Self, Self::Error> {
+    fn try_from(i: usize) -> Result<Self, Self::Error> {
         match i {
-            x if x == Choices::FastArithmetic as u32 => Ok(Choices::FastArithmetic),
-            x if x == Choices::BasicAddition as u32 => Ok(Choices::BasicAddition),
-            x if x == Choices::BasicMultiplication as u32 => Ok(Choices::BasicMultiplication),
-            x if x == Choices::CrossMultiplication as u32 => Ok(Choices::CrossMultiplication),
-            x if x == Choices::CalendarDates as u32 => Ok(Choices::CalendarDates),
+            x if x == Choices::FastArithmetic as usize => Ok(Choices::FastArithmetic),
+            x if x == Choices::BasicAddition as usize => Ok(Choices::BasicAddition),
+            x if x == Choices::BasicMultiplication as usize => Ok(Choices::BasicMultiplication),
+            x if x == Choices::CrossMultiplication as usize => Ok(Choices::CrossMultiplication),
+            x if x == Choices::CalendarDates as usize => Ok(Choices::CalendarDates),
             _ => Err(()),
         }
     }
@@ -69,95 +69,60 @@ MENTAL MATH
 "
     );
 
-    let (mut fast_arithmetic_successes, mut fast_arithmetic_failures, mut fast_arithmetic_duration) =
-        (0, 0, TimeDelta::zero());
-    let (mut basic_addition_successes, mut basic_addition_failures, mut basic_addition_duration) =
-        (0, 0, TimeDelta::zero());
-    let (
-        mut basic_multiplication_successes,
-        mut basic_multiplication_failures,
-        mut basic_multiplication_duration,
-    ) = (0, 0, TimeDelta::zero());
-    let (
-        mut cross_multiplication_successes,
-        mut cross_multiplication_failures,
-        mut cross_multiplication_duration,
-    ) = (0, 0, TimeDelta::zero());
-    let (mut calendar_successes, mut calendar_failures, mut calendar_duration) =
-        (0, 0, TimeDelta::zero());
+    let mut stats = vec![
+        ExerciseStats::new("Fast Arithmetic"),
+        ExerciseStats::new("Basic Addition"),
+        ExerciseStats::new("Basic Multiplication"),
+        ExerciseStats::new("Cross Multiplication"),
+        ExerciseStats::new("Calculate Calendar Dates"),
+    ];
+
+    let mut rng = rand::rng();
+    let mut failures = 0;
+    let mut duration = TimeDelta::zero();
 
     loop {
-        println!(
-            "\
-Choose an exercise:
-1 = Fast Arithmetic
-2 = Basic Addition
-3 = Basic Multiplication
-4 = Cross Multiplication
-5 = Calculate Calendar Dates 
-"
-        );
+        println!("Choose an exercise:");
+
+        for i in 0..(&stats).len() {
+            println!("{} = {}", i + 1, stats[i].name);
+        }
+
         let mut choice = String::new();
 
         io::stdin()
             .read_line(&mut choice)
             .expect("Failed to read line");
 
-        let choice: u32 = choice.trim().parse().expect("Please type a number!");
-
-        let mut rng = rand::rng();
+        let choice: usize = choice.trim().parse().expect("Please type a number!");
 
         match choice.try_into() {
             Ok(Choices::FastArithmetic) => {
-                let (failures, duration) = timefunc(fast_arithmetic, &mut rng);
-                fast_arithmetic_failures += failures;
-                fast_arithmetic_successes += 1;
-                fast_arithmetic_duration += duration;
+                (failures, duration) = timefunc(fast_arithmetic, &mut rng);
             }
             Ok(Choices::BasicAddition) => {
-                let (failures, duration) = timefunc(basic_addition, &mut rng);
-                basic_addition_failures += failures;
-                basic_addition_successes += 1;
-                basic_addition_duration += duration;
+                (failures, duration) = timefunc(basic_addition, &mut rng);
             }
             Ok(Choices::BasicMultiplication) => {
-                let (failures, duration) = timefunc(basic_multiplication, &mut rng);
-                basic_multiplication_failures += failures;
-                basic_multiplication_successes += 1;
-                basic_multiplication_duration += duration;
+                (failures, duration) = timefunc(basic_multiplication, &mut rng);
             }
             Ok(Choices::CrossMultiplication) => {
-                let (failures, duration) = timefunc(cross_multiplication, &mut rng);
-                cross_multiplication_failures += failures;
-                cross_multiplication_successes += 1;
-                cross_multiplication_duration += duration;
+                (failures, duration) = timefunc(cross_multiplication, &mut rng);
             }
             Ok(Choices::CalendarDates) => {
-                let (failures, duration) = timefunc(calculate_calendar_dates, &mut rng);
-                calendar_failures += failures;
-                calendar_successes += 1;
-                calendar_duration += duration;
+                (failures, duration) = timefunc(calculate_calendar_dates, &mut rng);
             }
             Err(_) => print_error("Unknown option, please select a number between 1 and 4."),
         }
+        stats[choice - 1].failures += failures;
+        stats[choice - 1].successes += 1;
+        stats[choice - 1].duration += duration;
 
-        print_statistics(
-            fast_arithmetic_failures,
-            fast_arithmetic_successes,
-            fast_arithmetic_duration,
-            basic_addition_successes,
-            basic_addition_failures,
-            basic_addition_duration,
-            basic_multiplication_successes,
-            basic_multiplication_failures,
-            basic_multiplication_duration,
-            cross_multiplication_successes,
-            cross_multiplication_failures,
-            cross_multiplication_duration,
-            calendar_successes,
-            calendar_failures,
-            calendar_duration,
-        );
+        for ex in &stats {
+            if ex.successes > 0 {
+                ex.print();
+            }
+        }
     }
 }
 
@@ -166,7 +131,7 @@ fn fast_arithmetic(rng: &mut rand::rngs::ThreadRng) -> u32 {
     let first_number;
     let mut second_number;
     let expected;
-    let op: u32 = rng.random_range(1..=4);
+    let op: usize = rng.random_range(1..=4);
     let mut arithmetic_string;
 
     match op.try_into() {

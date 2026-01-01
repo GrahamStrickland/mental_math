@@ -200,111 +200,39 @@ pub fn print_error(err_string: &str) {
     }
 }
 
-pub fn print_statistics(
-    fast_arithmetic_failures: u32,
-    fast_arithmetic_successes: u32,
-    fast_arithmetic_duration: TimeDelta,
-    basic_addition_successes: u32,
-    basic_addition_failures: u32,
-    basic_addition_duration: TimeDelta,
-    basic_multiplication_successes: u32,
-    basic_multiplication_failures: u32,
-    basic_multiplication_duration: TimeDelta,
-    cross_multiplication_successes: u32,
-    cross_multiplication_failures: u32,
-    cross_multiplication_duration: TimeDelta,
-    calendar_successes: u32,
-    calendar_failures: u32,
-    calendar_duration: TimeDelta,
-) {
-    if fast_arithmetic_successes > 0 {
-        let fast_arithmetic_attempts = fast_arithmetic_successes + fast_arithmetic_failures;
-        println!(
-            "\
-================
-Fast Arithmetic:
-================
-    Total played = {fast_arithmetic_successes}
-    Attempts = {fast_arithmetic_attempts}
-    Success rate = {:.2}%
-    Average speed = {:.3}s
-    ",
-            (f64::from(fast_arithmetic_successes) / f64::from(fast_arithmetic_attempts)) * 100.0,
-            fast_arithmetic_duration.as_seconds_f64() / f64::from(fast_arithmetic_successes)
-        );
+pub struct ExerciseStats {
+    pub name: &'static str,
+    pub successes: u32,
+    pub failures: u32,
+    pub duration: TimeDelta,
+}
+
+impl ExerciseStats {
+    pub fn new(name: &'static str) -> ExerciseStats {
+        ExerciseStats {
+            name: name,
+            successes: 0,
+            failures: 0,
+            duration: TimeDelta::zero(),
+        }
     }
 
-    if basic_addition_successes > 0 {
-        let basic_addition_attempts = basic_addition_successes + basic_addition_failures;
+    pub fn print(self: &ExerciseStats) {
+        let attempts = self.successes + self.failures;
+        println!("{}", "=".repeat(self.name.len() + 1));
+        println!("{}", self.name);
+        println!("{}", "=".repeat(self.name.len() + 1));
         println!(
             "\
-===============
-Basic Addition:
-===============
-    Total played = {basic_addition_successes}
-    Attempts = {basic_addition_attempts}
-    Success rate = {:.2}%
-    Average speed = {:.3}s
-    ",
-            (f64::from(basic_addition_successes) / f64::from(basic_addition_attempts)) * 100.0,
-            basic_addition_duration.as_seconds_f64() / f64::from(basic_addition_successes)
-        );
-    }
-
-    if basic_multiplication_successes > 0 {
-        let basic_multiplication_attempts =
-            basic_multiplication_successes + basic_multiplication_failures;
-        println!(
-            "\
-=====================
-Basic Multiplication:
-=====================
-    Total played = {basic_multiplication_successes}
-    Attempts = {basic_multiplication_attempts}
-    Success rate = {:.2}%
-    Average speed = {:.3}s
-    ",
-            (f64::from(basic_multiplication_successes) / f64::from(basic_multiplication_attempts))
-                * 100.0,
-            basic_multiplication_duration.as_seconds_f64()
-                / f64::from(basic_multiplication_successes)
-        );
-    }
-
-    if cross_multiplication_successes > 0 {
-        let cross_multiplication_attempts =
-            cross_multiplication_successes + cross_multiplication_failures;
-        println!(
-            "\
-=====================
-Cross Multiplication:
-=====================
-    Total played = {cross_multiplication_successes}
-    Attempts = {cross_multiplication_attempts}
-    Success rate = {:.2}%
-    Average speed = {:.3}s
-    ",
-            (f64::from(cross_multiplication_successes) / f64::from(cross_multiplication_attempts))
-                * 100.0,
-            cross_multiplication_duration.as_seconds_f64()
-                / f64::from(cross_multiplication_successes)
-        );
-    }
-
-    if calendar_successes > 0 {
-        let calendar_attempts = calendar_successes + calendar_failures;
-        println!(
-            "\
-===========================
-Calculating Calendar Dates:
-===========================
-    Total played = {calendar_successes}
-    Attempts = {calendar_attempts}
-    Success rate = {:.2}%
-    Average speed = {:.3}s
-    ",
-            (f64::from(calendar_successes) / f64::from(calendar_attempts)) * 100.0,
-            calendar_duration.as_seconds_f64() / f64::from(calendar_successes)
+Total played = {}
+Attempts = {}
+Success rate = {:.2}%
+Average speed = {:.3}s
+        ",
+            self.successes,
+            attempts,
+            (f64::from(self.successes) / f64::from(attempts)) * 100.0,
+            self.duration.as_seconds_f64() / f64::from(self.successes)
         );
     }
 }
