@@ -6,15 +6,9 @@ use rand::Rng;
 use termcolor::Color;
 
 use mental_math::{
-    ExerciseStats, basic_addition_help, basic_multiplication_help, calendar_dates_help,
-    cross_multiplication_help, fast_arithmetic_help, print_color, print_error,
-    random_date_in_range, timefunc,
+    Choices, ExerciseStats, MAX_ADDITIONS, MAX_BIG_NUMBER, MAX_MED_NUMBER, MAX_SMALL_NUMBER, help,
+    print_color, print_error, random_date_in_range, timefunc,
 };
-
-static MAX_ADDITIONS: i32 = 5;
-static MAX_BIG_NUMBER: i32 = 99999;
-static MAX_MED_NUMBER: i32 = 999;
-static MAX_SMALL_NUMBER: i32 = 20;
 
 enum Operations {
     Addition = 1,
@@ -32,29 +26,6 @@ impl TryFrom<usize> for Operations {
             x if x == Operations::Subtraction as usize => Ok(Operations::Subtraction),
             x if x == Operations::Multiplication as usize => Ok(Operations::Multiplication),
             x if x == Operations::Division as usize => Ok(Operations::Division),
-            _ => Err(()),
-        }
-    }
-}
-
-enum Choices {
-    FastArithmetic = 1,
-    BasicAddition,
-    BasicMultiplication,
-    CrossMultiplication,
-    CalendarDates,
-}
-
-impl TryFrom<usize> for Choices {
-    type Error = ();
-
-    fn try_from(i: usize) -> Result<Self, Self::Error> {
-        match i {
-            x if x == Choices::FastArithmetic as usize => Ok(Choices::FastArithmetic),
-            x if x == Choices::BasicAddition as usize => Ok(Choices::BasicAddition),
-            x if x == Choices::BasicMultiplication as usize => Ok(Choices::BasicMultiplication),
-            x if x == Choices::CrossMultiplication as usize => Ok(Choices::CrossMultiplication),
-            x if x == Choices::CalendarDates as usize => Ok(Choices::CalendarDates),
             _ => Err(()),
         }
     }
@@ -187,7 +158,7 @@ fn fast_arithmetic(rng: &mut rand::rngs::ThreadRng) -> u32 {
             Ok(i) => i,
             Err(_) => {
                 if answer.trim() == "help" || answer.trim() == "--help" || answer.trim() == "-h" {
-                    fast_arithmetic_help();
+                    help(Choices::FastArithmetic);
                 }
                 continue;
             }
@@ -234,7 +205,7 @@ fn basic_addition(rng: &mut rand::rngs::ThreadRng) -> u32 {
             Ok(i) => i,
             Err(_) => {
                 if answer.trim() == "help" || answer.trim() == "--help" || answer.trim() == "-h" {
-                    basic_addition_help();
+                    help(Choices::BasicAddition);
                 }
                 continue;
             }
@@ -272,7 +243,7 @@ fn basic_multiplication(rng: &mut rand::rngs::ThreadRng) -> u32 {
             Ok(i) => i,
             Err(_) => {
                 if answer.trim() == "help" || answer.trim() == "--help" || answer.trim() == "-h" {
-                    basic_multiplication_help(MAX_SMALL_NUMBER);
+                    help(Choices::BasicMultiplication);
                 }
                 continue;
             }
@@ -313,7 +284,7 @@ fn cross_multiplication(rng: &mut rand::rngs::ThreadRng) -> u32 {
             Ok(i) => i,
             Err(_) => {
                 if answer.trim() == "help" || answer.trim() == "--help" || answer.trim() == "-h" {
-                    cross_multiplication_help();
+                    help(Choices::CrossMultiplication);
                 }
                 continue;
             }
@@ -354,7 +325,7 @@ fn calculate_calendar_dates(rng: &mut rand::rngs::ThreadRng) -> u32 {
             Ok(weekday) => weekday,
             Err(_) => {
                 if answer.trim() == "help" || answer.trim() == "--help" || answer.trim() == "-h" {
-                    calendar_dates_help();
+                    help(Choices::CalendarDates);
                 }
                 continue;
             }
