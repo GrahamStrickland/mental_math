@@ -112,16 +112,16 @@ pub fn help(choice: Choices) {
             print_header("Calculating Calendar Dates");
 
             println!("{}",
-                "Century:\n    1600s / 2000s / 2400s /…  +2\n    1700s / 2100s / 2500s /…  +0\n    1800s / 2200s / 2600s /…  +5\n    1900s / 2300s / 2700s /…  +3\n\n".red()
+                "Century:\n    1600s / 2000s / 2400s /…  +2\n    1700s / 2100s / 2500s /…  +0\n    1800s / 2200s / 2600s /…  +5\n    1900s / 2300s / 2700s /…  +3\n".red()
             );
 
-            println!("{}", "Year:\n    Divide the year by 4 and ignore any remainder. Then add this to the original year. Find the remainder when dividing by 7.\n\n".yellow());
+            println!("{}", "Year:\n    Divide the year by 4 and ignore any remainder. Then add this to the original year. Find the remainder when dividing by 7.\n".yellow());
 
             println!("{}", 
-                "Month:\n    January:   +4\n    February:  +0\n    March:     +0\n    April:     +3\n    May:       +5\n    June:      +1\n    July:      +3\n    August:    +6\n    September: +2\n    October:   +4\n    November:  +0\n    December:  +2\n\n".green()
+                "Month:\n    January:   +4\n    February:  +0\n    March:     +0\n    April:     +3\n    May:       +5\n    June:      +1\n    July:      +3\n    August:    +6\n    September: +2\n    October:   +4\n    November:  +0\n    December:  +2\n".green()
             );
 
-            println!("{}", "Day:\n    Just use the date itself. But to simplify calculation later, it is better to find the remainder when dividing by 7.\n\n".blue());
+            println!("{}", "Day:\n    Just use the date itself. But to simplify calculation later, it is better to find the remainder when dividing by 7.\n".blue());
 
             println!("{}", "Add together the 4 contributions, but if the date is in January or February in a leap year, you must subtract one.\n".white());
         }
