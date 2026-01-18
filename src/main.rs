@@ -1,4 +1,5 @@
 use std::convert::{TryFrom, TryInto};
+use std::io::{self, Write};
 
 use chrono::{Datelike, NaiveDate, TimeDelta, Weekday};
 use colored::Colorize;
@@ -155,6 +156,7 @@ fn fast_arithmetic(rng: &mut rand::rngs::ThreadRng) -> u32 {
 
     loop {
         print!("{}", arithmetic_string.blue().bold());
+        io::stdout().flush().unwrap();
 
         let answer = read_input("Enter the answer");
 
@@ -196,6 +198,7 @@ fn basic_addition(rng: &mut rand::rngs::ThreadRng) -> u32 {
 
     loop {
         print!("{}", addition_string.blue().bold());
+        io::stdout().flush().unwrap();
 
         let answer = read_input("Enter the answer");
 
@@ -228,6 +231,7 @@ fn basic_multiplication(rng: &mut rand::rngs::ThreadRng) -> u32 {
 
     loop {
         print!("{}", format!("{} x {}\n", first, second).blue().bold());
+        io::stdout().flush().unwrap();
 
         let answer = read_input("Enter the answer");
 
@@ -263,6 +267,7 @@ fn cross_multiplication(rng: &mut rand::rngs::ThreadRng) -> u32 {
             "{}",
             format!("{} x {}\n", big_number, small_number).blue().bold()
         );
+        io::stdout().flush().unwrap();
 
         let answer = read_input("Enter the answer");
 
@@ -298,6 +303,7 @@ fn calculate_calendar_dates(rng: &mut rand::rngs::ThreadRng) -> u32 {
 
     loop {
         print!("{}", format!("Date: {}\n", rand_date).blue().bold());
+        io::stdout().flush().unwrap();
 
         let answer = read_input("Enter the day of the week");
 
@@ -321,4 +327,3 @@ fn calculate_calendar_dates(rng: &mut rand::rngs::ThreadRng) -> u32 {
         failures += 1;
     }
 }
-
