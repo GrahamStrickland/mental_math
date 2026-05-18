@@ -22,7 +22,7 @@ use chrono::{Datelike, NaiveDate, TimeDelta, Weekday};
 use colored::Colorize;
 use rand::Rng;
 
-use mental_math::{
+use mentalmath::{
     Choices, ExerciseStats, MAX_ADDITIONS, MAX_BIG_NUMBER, MAX_MED_NUMBER, MAX_SMALL_NUMBER, help,
     print_header, random_date_in_range, read_input, timefunc,
 };
@@ -49,7 +49,7 @@ impl TryFrom<usize> for Operations {
 }
 
 fn main() {
-    print_header("MENTAL MATH");
+    print_header("MentalMath");
 
     let mut stats = vec![
         ExerciseStats::new("Fast Arithmetic"),
