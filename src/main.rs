@@ -124,7 +124,7 @@ fn main() {
 fn fast_arithmetic(rng: &mut rand::rngs::ThreadRng) -> u32 {
     let mut failures = 0;
     let first_number;
-    let mut second_number;
+    let second_number;
     let expected;
     let op: usize = rng.random_range(1..=4);
     let mut arithmetic_string;
@@ -137,11 +137,10 @@ fn fast_arithmetic(rng: &mut rand::rngs::ThreadRng) -> u32 {
             arithmetic_string = format!("{} + {}", first_number, second_number);
         }
         Ok(Operations::Subtraction) => {
-            first_number = rng.random_range(MAX_SMALL_NUMBER..MAX_MED_NUMBER);
-            second_number = rng.random_range(MAX_SMALL_NUMBER..MAX_MED_NUMBER);
-            while second_number >= first_number {
-                second_number = rng.random_range(MAX_SMALL_NUMBER..MAX_MED_NUMBER);
-            }
+            let a = rng.random_range(MAX_SMALL_NUMBER..MAX_MED_NUMBER);
+            let b = rng.random_range(MAX_SMALL_NUMBER..MAX_MED_NUMBER);
+            first_number = a.max(b);
+            second_number = a.min(b);
             expected = first_number - second_number;
             arithmetic_string = format!("{} - {}", first_number, second_number);
         }
@@ -152,11 +151,10 @@ fn fast_arithmetic(rng: &mut rand::rngs::ThreadRng) -> u32 {
             arithmetic_string = format!("{} x {}", first_number, second_number);
         }
         Ok(Operations::Division) => {
-            first_number = rng.random_range(MAX_SMALL_NUMBER..MAX_MED_NUMBER);
             second_number = rng.random_range(2..MAX_SMALL_NUMBER);
-            while first_number % second_number != 0 {
-                second_number = rng.random_range(2..MAX_SMALL_NUMBER);
-            }
+            let min_quotient = (MAX_SMALL_NUMBER + second_number - 1) / second_number;
+            let max_quotient = (MAX_MED_NUMBER - 1) / second_number;
+            first_number = rng.random_range(min_quotient..=max_quotient) * second_number;
             expected = first_number / second_number;
             arithmetic_string = format!("{} ÷ {}", first_number, second_number);
         }
