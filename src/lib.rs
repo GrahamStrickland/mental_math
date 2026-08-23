@@ -1,4 +1,3 @@
-// Copyright (C) 2026 Graham Strickland
 //
 // This file is part of MentalMath.
 //
